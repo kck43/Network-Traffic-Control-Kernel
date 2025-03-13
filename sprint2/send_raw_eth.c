@@ -10,8 +10,8 @@
 #include <sys/ioctl.h>
 
 #define ETH_P_CUSTOM 0x88B5 // Custom EtherType for filtering
-#define IFACE "lo"        // Change this to your network interface
-#define NUM_PACKETS 1
+#define IFACE "enp0s3"        // Change this to your network interface
+#define NUM_PACKETS 10
 
 int main() {
     int sockfd;
@@ -47,6 +47,7 @@ int main() {
     memset(eth->h_source, 0xBB, ETH_ALEN); // Dummy source MAC (BB:BB:BB:BB:BB:BB)
     eth->h_proto = htons(ETH_P_CUSTOM); // Custom EtherType
 
+    unsigned short packetIdentifier = 0;
     // Fill payload with a simple pattern
     memset(packet + sizeof(struct ethhdr), 0x42, sizeof(packet) - sizeof(struct ethhdr));
 
