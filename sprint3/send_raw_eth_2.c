@@ -11,7 +11,7 @@
 
 #define ETH_P_CUSTOM 0x88B5  // Custom EtherType for filtering
 #define IFACE "enp0s3"       // Change this to your network interface
-#define NUM_PACKETS 500
+#define NUM_PACKETS 10
 #define PAYLOAD_OFFSET 14    // Offset for unique identifier (after Ethernet header)
 
 int main() {
