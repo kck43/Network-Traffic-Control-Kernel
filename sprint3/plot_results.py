@@ -9,7 +9,7 @@ data["net_dev_xmit_timestamps"] = []
 data["latency"] = []
 
 def get_data_frame(): 
-    with open("output_large.txt", "r") as file:
+    with open("output.txt", "r") as file:
     	file.readline()
     	for line in file:
     		if len(line) < 2:
