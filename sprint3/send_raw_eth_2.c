@@ -11,10 +11,11 @@
 
 #define ETH_P_CUSTOM 0x88B5  // Custom EtherType for filtering
 #define IFACE "enp0s3"       // Change this to your network interface
-#define NUM_PACKETS 10
+//#define NUM_PACKETS 20
 #define PAYLOAD_OFFSET 14    // Offset for unique identifier (after Ethernet header)
 
-int main() {
+int main(int argc, char* argv[]) {
+    int NUM_PACKETS = atoi(argv[1]);
     int sockfd;
     struct ifreq ifr;
     struct sockaddr_ll sa;
