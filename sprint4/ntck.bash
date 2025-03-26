@@ -8,20 +8,24 @@ if [[ -z "$INTERFACE" ]]; then
     exit 1
 fi
 
-DIR=$(mktemp -d)
-python3 -m venv $DIR/venv
-source $DIR/venv/bin/activate
-pip install -r requirements.txt
-gcc -o $DIR/sendeth -O2 sendeth.c
+NTCK_DIR=${NTCK_DIR:-$(mktemp -d)}
+gcc -o $NTCK_DIR/sendeth -O2 sendeth.c
 
-bpftrace time_send_xmit.bt | tee output.txt &
+if [[ -z "$VIRTUAL_ENV" ]]; then
+    echo "setting up temporary venv"
+    python3 -m venv $NTCK_DIR/venv
+    source $NTCK_DIR/venv/bin/activate
+    pip install -r requirements.txt
+fi
+
+bpftrace time_send_xmit.bt | tee $NTCK_DIR/output.txt &
 BPFPID=$!
 sleep 5
-$DIR/sendeth $INTERFACE 1000 &
+$NTCK_DIR/sendeth $INTERFACE 1000 &
 SENDETHPID=$!
 sleep 5
 
 kill $SENDER $SENDETHPID
 wait -fn $SENDER $SENDETHPID
 
-python3 plot_results.py output.txt
+python3 plot_results.py $NTCK_DIR/output.txt
