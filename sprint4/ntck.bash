@@ -3,7 +3,7 @@
 set -ex -o pipefail
 
 # Get the first active network interface for later.
-INTERFACE=$(ip -j link show | jq -r '.[] | select(.operstate == "UP") | .ifname' | head -n1)
+INTERFACE=${INTERFACE:-$(ip -j link show | jq -r '.[] | select(.operstate == "UP") | .ifname' | head -n1)}
 if [[ -z "$INTERFACE" ]]; then
     echo "couldn't find an interface which is UP"
     exit 1
@@ -24,7 +24,7 @@ if [[ -z "$VIRTUAL_ENV" ]]; then
 fi
 
 # Start collecting metrics.
-bpftrace time_send_xmit.bt | tee $NTCK_DIR/output.txt &
+bpftrace time_send_xmit.bt > $NTCK_DIR/output.txt &
 BPFPID=$!
 sleep 5
 
