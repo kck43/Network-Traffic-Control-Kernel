@@ -29,13 +29,11 @@ BPFPID=$!
 sleep 5
 
 # Dump packets to make sure something is metricked.
-$NTCK_DIR/sendeth $INTERFACE 1000 &
-SENDETHPID=$!
-sleep 5
+$NTCK_DIR/sendeth $INTERFACE 1000
 
-# We ran two background jobs; end them.
-kill $SENDER $SENDETHPID
-wait -fn $SENDER $SENDETHPID
+# End the background job.
+kill $BPFPID
+wait -fn $BPFPID
 
 # Produce the plots.
 python3 plot_results.py $NTCK_DIR/output.txt
