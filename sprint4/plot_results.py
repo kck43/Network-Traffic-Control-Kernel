@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 data = {
-    "sys_enter_sendto_timestamps" = [],
-    "net_dev_xmit_timestamps" = [],
-    "latency" = [],
+    "sys_enter_sendto_timestamps": [],
+    "net_dev_xmit_timestamps": [],
+    "latency": [],
 }
 
 def get_data_frame(file):
