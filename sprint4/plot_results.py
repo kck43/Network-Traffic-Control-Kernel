@@ -25,11 +25,19 @@ def get_data_frame(file):
         elif line.startswith("@xmit"):
             data["net_dev_xmit_timestamps"].append([key, int(timestamp)])
 
+    dropped = len(data["sys_enter_sendto_timestamps"]) - len(data["net_dev_xmit_timestamps"])
+    print("Dropped ", dropped)
+    for x in range(dropped):
+        data["net_dev_xmit_timestamps"].append([None, None])
+
     for i in range(min(len(data["sys_enter_sendto_timestamps"]), len(data["net_dev_xmit_timestamps"]))):
         sendto_ts = int(data["sys_enter_sendto_timestamps"][i][1])
-        xmit_ts = int(data["net_dev_xmit_timestamps"][i][1])
-        latency = xmit_ts - sendto_ts
-        data["latency"].append(latency)
+        if data["net_dev_xmit_timestamps"][i][1] == None:
+            data['latency'].append(None)
+        else:
+            xmit_ts = int(data["net_dev_xmit_timestamps"][i][1])
+            latency = xmit_ts - sendto_ts
+            data["latency"].append(latency)
    
     
     print(f"len(1): {len(data['sys_enter_sendto_timestamps'])}")
