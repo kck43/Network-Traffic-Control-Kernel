@@ -25,11 +25,19 @@ def get_data_frame(file):
         elif line.startswith("@xmit"):
             data["net_dev_xmit_timestamps"].append([key, int(timestamp)])
 
+    dropped = len(data["sys_enter_sendto_timestamps"]) - len(data["net_dev_xmit_timestamps"])
+    print("Dropped ", dropped)
+    for x in range(dropped):
+        data["net_dev_xmit_timestamps"].append([None, None])
+
     for i in range(min(len(data["sys_enter_sendto_timestamps"]), len(data["net_dev_xmit_timestamps"]))):
         sendto_ts = int(data["sys_enter_sendto_timestamps"][i][1])
-        xmit_ts = int(data["net_dev_xmit_timestamps"][i][1])
-        latency = xmit_ts - sendto_ts
-        data["latency"].append(latency)
+        if data["net_dev_xmit_timestamps"][i][1] == None:
+            data['latency'].append(None)
+        else:
+            xmit_ts = int(data["net_dev_xmit_timestamps"][i][1])
+            latency = xmit_ts - sendto_ts
+            data["latency"].append(latency)
    
     
     print(f"len(1): {len(data['sys_enter_sendto_timestamps'])}")
@@ -160,6 +168,18 @@ def plot_latency(df):
     plt.savefig("latency_plot.jpg", format="jpg", dpi=300)
     # plt.show()
 
+def latency_hist(df):
+    bins = [750, 1_000, 1_250, 1_500, 1_750, 2_000, 2_250, 2_500, 2_750, 3_000] 
+    ax = plt.subplots(figsize=(20, 4)) 
+    bins = ax.hist(df['latency'], bins=bins, edgecolor = 'black') 
+    bin_labels=[f"{int(bins[i])}-{int(bins[i+1])} ns" for i in range(len(bins)-1)] 
+    ax.set_xticks([(bins[i]+bins[i+1]) / 2 for i in range(len(bins)-1)]) 
+    ax.set_xticklabels(bin_labels) 
+    ax.set_title("Latency Freq Histogram") 
+    ax.set_xlabel("Latency range in ns") 
+    ax.set_ylabel("Count of Samples") 
+    plt.savefig("latency_hist.jpg", format="jpg", dpi=300)
+
 if __name__ == '__main__':
     dump = 'output.txt'
     if len(sys.argv) > 1:
@@ -168,3 +188,4 @@ if __name__ == '__main__':
         data = get_data_frame(f)
     plot_timeline(data)
     plot_latency(data)
+    latency_hist(data)
